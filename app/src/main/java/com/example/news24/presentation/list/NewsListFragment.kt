@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.news24.R
 
+
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
