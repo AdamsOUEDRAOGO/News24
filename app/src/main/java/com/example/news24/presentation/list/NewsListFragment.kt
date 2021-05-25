@@ -1,16 +1,18 @@
 package com.example.news24.presentation.list
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.telecom.Call
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.Button
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.news24.R
+import com.example.news24.api.NewoApi
+import com.example.news24.api.NewsResponse
+import javax.security.auth.callback.Callback
 
 
 /**
@@ -19,7 +21,8 @@ import com.example.news24.R
 class NewsListFragment : Fragment() {
 
     private lateinit var recycleView: RecyclerView
-    private val adapter = NewsAdapter(listOf())
+    private val adapter = NewsAdapter(listOf(), ::onClickedNews)
+
     private val  layoutManager = LinearLayoutManager(context)
 
     override fun onCreateView(
@@ -40,17 +43,29 @@ class NewsListFragment : Fragment() {
             layoutManager = this@NewsListFragment.layoutManager
             adapter = this@NewsListFragment.adapter
         }
-            val newoList : ArrayList<News> = arrayListOf<News>.apply(){ this.ArrayList<News>
 
-                add(News(name:"Reouverture des terasses àprès plusieurs mois de confinement"))
-                add(News(name: "Hausse de cas de contamination de COVID en région Parisienne"))
-                add(News(name: "Nouveau varriant de COVID détecter à Bordeaux"))
-                add(News(name: "Victoire ecrasantedu PSG face à Monaco"))
-                add(News(name: "La rochelle vainqueur de la finale de rugby"))
-            }
+            val retrofit: Retrofit = Builder()
+                .baseUrl("https://pokeapi.co/api/v2/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                .build()
 
-            adapter.updateList(newoList)
+            val newoApi: NewoApi = retrofit.create(NewoApi::class.java)
+
+            newoApi.getNewsList().enqueue(object: Callback<NewsResponse>{
+                override fun onFailure(call: Call<NewsResponse>, t: Throwable){
+                    //TODO("Not implemented")
+                }
+                override fun onResponse(call: Call<NewsResponse>, responce: Response<NewsResponse>){
+                        if (response.isSucceful && response.body() != null){
+                            val newsResponse : NewsResponse = response.body()!!
+                            adapter.updateList(newsResponse.results)
+                        }
+                }
+            })
+
     }
-
+    private fun onClickedNews(news: News) {
+        findNavController().navigate(R.id.navigateToNewsDetailFragment)
+    }
 }
 

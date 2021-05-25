@@ -9,8 +9,9 @@ import com.example.news24.News
 import com.example.news24.R
 import com.example.news24.R.layout.news_item
 
-class NewsAdapter(private var dataSet: List<News>) :
+class NewsAdapter(private var dataSet: List<News>, var listener:((News) -> Unit)? = null) :
         RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+
 
     /**
      * Provide a reference to the type of views that you are using
@@ -21,7 +22,7 @@ class NewsAdapter(private var dataSet: List<News>) :
 
         init {
             // Define click listener for the ViewHolder's View.
-            textView = view.findViewById(R.id.news_name)
+            val textView: TextView = view.findViewById(R.id.news_name)
         }
     }
     fun updateList(list: List<News>){
@@ -45,6 +46,9 @@ class NewsAdapter(private var dataSet: List<News>) :
         // contents of the view with that element
         val news : News = dataSet[position]
         viewHolder.textView.text = news.name
+        viewHolder.itemView.setOnClickListener{
+            listener?.invoke(news)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
